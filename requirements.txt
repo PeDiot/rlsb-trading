@@ -1,0 +1,11 @@
+numpy 
+pandas
+matplotlib
+gym_anytrading
+stable-baselines3
+ta
+yfinance
+PyYAML
+rich 
+tqdm 
+ipywidgets
