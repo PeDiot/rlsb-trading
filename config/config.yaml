@@ -1,3 +1,10 @@
+env: 
+  ticker: ETH-USD
+  interval: 1h
+  period: 1y
+  train_prop: 0.7
+  window_size: 30
+  indicators: [RSI]
 a2c: 
   policy: "MlpPolicy"
   policy_kwargs:
@@ -14,6 +21,7 @@ ppo:
     net_arch: 
       vf: [128, 128, 128]
       pi: [64, 64]
+  batch_size: 64
   learning_rate: .0007
   n_steps: 5
   gamma: 0.99
@@ -21,7 +29,7 @@ ppo:
   clip_range: .2
   verbose: 1
 optim: 
-  total_timesteps: 100 
-  reward_threshold: 200
-  eval_freq: 10
-  save_path: .models/
+  total_timesteps: 100000
+  reward_threshold: 100
+  eval_freq: 10000
+  save_path: models/a2c_eth_1y_rsi/

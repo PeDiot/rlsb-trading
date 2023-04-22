@@ -1,6 +1,0 @@
-ticker: GOOGL
-interval: 1d
-period: 3y
-train_prop: 0.8
-window_size: 30
-indicators: [MOM, RSI, MACD, OBV, MFI, ATR, CO]
