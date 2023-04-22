@@ -30,12 +30,16 @@ def _make_eval_callback(
 
 def train(model: BaseAlgorithm, env: MyStocksEnv, cfg: Dict, n_steps_per_episode: Optional[int]=None): 
 
-    eval_callback = _make_eval_callback(env, cfg["eval_freq"], cfg["max_no_improvement_evals"], cfg["min_evals"])
-
     if n_steps_per_episode is None:
-        total_timesteps = cfg["n_episodes"] * env.n_steps_per_episode
-    else:
-        total_timesteps = cfg["n_episodes"] * n_steps_per_episode
+        n_steps_per_episode = env.n_steps_per_episode
 
-    model.learn(total_timesteps=total_timesteps, callback=eval_callback, progress_bar=True) 
+    total_timesteps = cfg["n_episodes"] * n_steps_per_episode
+
+    eval_callback = _make_eval_callback(env, n_steps_per_episode, cfg["max_no_improvement_evals"], cfg["min_evals"])
+
+    model.learn(
+        total_timesteps=total_timesteps, 
+        callback=eval_callback, 
+        progress_bar=True) 
+    
     model.save(cfg["save_path"])
