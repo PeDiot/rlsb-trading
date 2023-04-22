@@ -23,13 +23,14 @@ ppo:
       pi: [64, 64]
   batch_size: 64
   learning_rate: .0007
-  n_steps: 5
+  n_steps: 4
   gamma: 0.99
   n_epochs: 5
   clip_range: .2
-  verbose: 1
+  verbose: 0
 optim: 
-  total_timesteps: 100000
-  reward_threshold: 100
-  eval_freq: 10000
-  save_path: models/a2c_eth_1y_rsi/
+  n_episodes: 100
+  eval_freq: 100
+  max_no_improvement_evals: 3
+  min_evals: 5
+  save_path: models/ppo_eth_1y_rsi/
