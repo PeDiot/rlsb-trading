@@ -15,6 +15,11 @@ class MyStocksEnv(StocksEnv):
         self._signal_features = signal_features
         super().__init__(**kwargs)
 
+    @property
+    def n_steps_per_episode(self) -> int: 
+        start, end = self.frame_bound
+        return end - start
+
     def _process_data(self):
         return self._prices, self._signal_features
     
