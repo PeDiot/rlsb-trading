@@ -1,0 +1,25 @@
+env: 
+  ticker: ETH-USD
+  interval: 1h
+  period: 1y
+  train_prop: 0.7
+  window_size: 30
+  indicators: [MOM, MACD, MFI, RSI, ATR, CO, OBV]   # [MOM, MACD, MFI, RSI, ATR, CO, OBV]
+policy: 
+  net_arch: 
+    vf: [128, 128]
+    pi: [128, 128]
+  lstm_hidden_size: 128
+  n_lstm_layers: 2  
+ppo: 
+  batch_size: 64
+  n_steps: 4
+  gamma: 0.99
+  n_epochs: 5
+  clip_range: .2
+  verbose: 0
+optim: 
+  n_episodes: 1
+  max_no_improvement_evals: 3
+  min_evals: 5                        # must be <= n_episodes
+  save_path: models/ppo_eth_1y/       # name containing model type and env args
