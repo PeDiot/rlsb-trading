@@ -4,9 +4,24 @@ from stable_baselines3.common.callbacks import EvalCallback, StopTrainingOnNoMod
 from stable_baselines3.common.monitor import Monitor
 import gym 
 
-from typing import Optional, Dict
+from typing import Optional, Dict, Callable
 
 from .environment import MyStocksEnv
+
+def linear_schedule(initial_value: float) -> Callable[[float], float]:
+    """
+    Linear learning rate schedule.
+
+    Args:
+        initial_value: Initial learning rate.
+    
+    Returns: schedule that compute current learning rate depending on remaining progress
+    """
+    def func(progress_remaining: float) -> float:
+        """Progress will decrease from 1 (beginning) to 0."""
+        return progress_remaining * initial_value
+
+    return func
 
 def _make_eval_callback(
     env: MyStocksEnv, 
