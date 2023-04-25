@@ -1,12 +1,11 @@
-import numpy as np
+from typing import Optional, Dict, Callable
+
+
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.callbacks import EvalCallback, StopTrainingOnNoModelImprovement
 from stable_baselines3.common.monitor import Monitor
-import gym 
 
-from typing import Optional, Dict, Callable
-
-from .environment import MyStocksEnv
+import gymnasium as gym
 
 def linear_schedule(initial_value: float) -> Callable[[float], float]:
     """
@@ -24,7 +23,7 @@ def linear_schedule(initial_value: float) -> Callable[[float], float]:
     return func
 
 def _make_eval_callback(
-    env: MyStocksEnv, 
+    env: gym.Env, 
     eval_freq: int, 
     max_no_improvement_evals: int, 
     min_evals: int) -> EvalCallback:
@@ -43,7 +42,14 @@ def _make_eval_callback(
     
     return eval_callback
 
-def train(model: BaseAlgorithm, env: MyStocksEnv, cfg: Dict, n_steps_per_episode: Optional[int]=None): 
+def train(model: BaseAlgorithm, env: gym.Env, cfg: Dict, n_steps_per_episode: Optional[int]=None): 
+    """Train policy with the given configuration and evaluate on env.
+    
+    Args:
+        model: Model to train.
+        env: Environment to evaluate policy on.
+        cfg: Configuration for training.
+        n_steps_per_episode: Number of steps per episode. Defaults to the number of steps per episode of the environment."""
 
     if n_steps_per_episode is None:
         n_steps_per_episode = env.n_steps_per_episode
