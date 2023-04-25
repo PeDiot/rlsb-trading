@@ -26,7 +26,7 @@ class MyStocksEnv(DFTradingEnvironment):
         return self._prices, self._signal_features
     
     def run_episode(self, model: Optional[BasePolicy]=None) -> Tuple[List[float], List[float]]: 
-        """Run one episode of the environment with an optional model."""
+        """Run one episode of the environment with model or randomly."""
 
         rewards = []
         profits = []
