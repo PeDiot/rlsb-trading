@@ -1,14 +1,16 @@
 import numpy as np 
-from gym_anytrading.envs import StocksEnv
 import yfinance as yf
 
+from trading_gym.envs.env import DFTradingEnvironment
+from stable_baselines3.common.policies import BasePolicy
+
 from pandas.core.frame import DataFrame
-from typing import Tuple, List, Dict
+from typing import Tuple, List, Dict, Optional
 
 from .indicators import add_indicators
 
 
-class MyStocksEnv(StocksEnv):
+class MyStocksEnv(DFTradingEnvironment):
     """Custom stock trading environment with technical indicators."""
     def __init__(self, prices: np.ndarray, signal_features: np.ndarray, **kwargs):
         self._prices = prices
@@ -22,6 +24,32 @@ class MyStocksEnv(StocksEnv):
 
     def _process_data(self):
         return self._prices, self._signal_features
+    
+    def run_episode(self, model: Optional[BasePolicy]=None) -> Tuple[List[float], List[float]]: 
+        """Run one episode of the environment with an optional model."""
+
+        rewards = []
+        profits = []
+
+        obs, _ = self.reset()
+
+        while True:
+            
+            if model is None:
+                action = self.action_space.sample()
+            else:
+                action, _ = model.predict(obs)
+
+            obs, reward, done, truncated, info = self.step(action)
+
+            rewards.append(reward)
+            profits.append(info["total_profit"])
+
+            if done:
+                print("info:", info)
+                break
+
+        return rewards, profits
     
 def _preprocess_data(df: DataFrame, indicators: List, window_size: int, frame_bound: Tuple) -> Tuple[np.ndarray, np.ndarray]:
     """Build signal features using selected technical indicators."""
