@@ -2,8 +2,10 @@ numpy
 pandas
 matplotlib
 seaborn
-gym_anytrading
+gymnasium
+gym_trading         # install from github: https://github.com/RaedShabbir/Trading-Gymnasium
 stable-baselines3
+sb3-contrib
 ta
 yfinance
 PyYAML
