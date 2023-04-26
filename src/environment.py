@@ -2,7 +2,10 @@ import numpy as np
 import yfinance as yf
 
 from trading_gym.envs.env import DFTradingEnvironment
+import gymnasium as gym
+
 from stable_baselines3.common.policies import BasePolicy
+from stable_baselines3.common.vec_env.dummy_vec_env import DummyVecEnv
 
 from pandas.core.frame import DataFrame
 from typing import Tuple, List, Dict, Optional
@@ -104,3 +107,9 @@ def prepare_trading_env(cfg_env: Dict) -> Tuple[MyStocksEnv, MyStocksEnv]:
     env_test = MyStocksEnv(prices_test, signal_features_test, **env_args["test"])
 
     return env_train, env_test
+
+def vectorize_env(env: gym.Env) -> DummyVecEnv: 
+
+    env_maker = lambda: env
+    vec = DummyVecEnv(env_fns=[env_maker]) 
+    return vec
