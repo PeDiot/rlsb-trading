@@ -6,6 +6,9 @@ from yaml import Loader
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import torch.nn as nn
+
+from stable_baselines3.common.base_class import BaseAlgorithm
 
 from src.environment import MyStocksEnv
 
@@ -17,6 +20,22 @@ def load_config(cfg_path: str) -> Dict:
         cfg = yaml.load(ymlfile, Loader)
 
     return cfg
+
+def get_model_path(cfg: Dict) -> str: 
+    """Get model path."""
+
+    cfg_env = cfg["env"]
+    n_indicators = len(cfg_env["indicators"])
+
+    file_name = f"{cfg_env['ticker']}_{cfg_env['period']}_{cfg_env['interval']}_{n_indicators}_indicators/" 
+    file_path = "models/" + file_name
+
+    return file_path
+
+def save_model(model: BaseAlgorithm, cfg: Dict): 
+    save_path = get_model_path(cfg)
+    model.save(save_path)
+    print(f"Model saved to {save_path}")
 
 def display_env(env: MyStocksEnv, fig_dims: Tuple=(8, 4)): 
     """Display environment (prices and positions)."""
