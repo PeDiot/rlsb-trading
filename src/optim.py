@@ -1,5 +1,4 @@
-from typing import Optional, Dict, Callable
-
+from typing import Optional, Dict
 
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.callbacks import EvalCallback, StopTrainingOnNoModelImprovement
@@ -7,20 +6,6 @@ from stable_baselines3.common.monitor import Monitor
 
 import gymnasium as gym
 
-def linear_schedule(initial_value: float) -> Callable[[float], float]:
-    """
-    Linear learning rate schedule.
-
-    Args:
-        initial_value: Initial learning rate.
-    
-    Returns: schedule that compute current learning rate depending on remaining progress
-    """
-    def func(progress_remaining: float) -> float:
-        """Progress will decrease from 1 (beginning) to 0."""
-        return progress_remaining * initial_value
-
-    return func
 
 def _make_eval_callback(
     env: gym.Env, 
@@ -42,25 +27,31 @@ def _make_eval_callback(
     
     return eval_callback
 
-def train(model: BaseAlgorithm, env: gym.Env, cfg: Dict, n_steps_per_episode: Optional[int]=None): 
+def train(model: BaseAlgorithm, env_eval: gym.Env, cfg: Dict, n_steps_per_episode: int=-1): 
     """Train policy with the given configuration and evaluate on env.
     
     Args:
         model: Model to train.
-        env: Environment to evaluate policy on.
+        env_eval: Environment to evaluate policy on.
         cfg: Configuration for training.
         n_steps_per_episode: Number of steps per episode. Defaults to the number of steps per episode of the environment."""
 
-    if n_steps_per_episode is None:
-        n_steps_per_episode = env.n_steps_per_episode
+    max_n_steps_per_episode = model.env.envs[0].n_steps_per_episode
 
-    total_timesteps = cfg["n_episodes"] * n_steps_per_episode
+    if n_steps_per_episode == -1:
+        n_steps_per_episode = max_n_steps_per_episode
 
-    eval_callback = _make_eval_callback(env, n_steps_per_episode, cfg["max_no_improvement_evals"], cfg["min_evals"])
+    elif n_steps_per_episode > max_n_steps_per_episode:
+        raise ValueError(f"n_steps_per_episode must be less than or equal to {max_n_steps_per_episode}.")
+
+    cfg_optim = cfg["optim"]
+    total_timesteps = cfg_optim["n_episodes"] * n_steps_per_episode
+    eval_freq = n_steps_per_episode
+
+    eval_callback = _make_eval_callback(env_eval, eval_freq, cfg_optim["max_no_improvement_evals"], cfg_optim["min_evals"])
 
     model.learn(
         total_timesteps=total_timesteps, 
         callback=eval_callback, 
-        progress_bar=True) 
-    
-    model.save(cfg["save_path"])
+        reset_num_timesteps=False,
+        progress_bar=True)
